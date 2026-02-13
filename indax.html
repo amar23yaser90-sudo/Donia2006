@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أثر | Donia 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Amiri:ital,wght@0,400;1,700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --rose: #e5b1b1;
+            --rose-dark: #d48e8e;
+            --bg: #0a0808;
+            --text: #ffffff;
+            --card-bg: rgba(229, 177, 177, 0.08);
+            --transition: all 0.4s ease;
+        }
+
+        body.light-mode {
+            --bg: #fdfafb;
+            --text: #2d2626;
+            --card-bg: rgba(229, 177, 177, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Cairo', sans-serif; 
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Matrix Background */
+        #matrix-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.15; pointer-events: none;
+        }
+
+        .mode-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            background: var(--card-bg); border: 1.5px solid var(--rose);
+            color: var(--rose); padding: 10px 20px; border-radius: 30px;
+            cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Cake Design */
+        .cake { position: relative; width: 250px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .layer {
+            position: relative; width: var(--w); height: var(--h);
+            background: var(--c); border-radius: 50% / 20%;
+            margin-bottom: -18px; z-index: var(--z);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -5px 10px rgba(0,0,0,0.1);
+            transform: translateY(-100vh);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+        .layer-1 { --w: 250px; --h: 65px; --c: #f8bbd0; --z: 1; }
+        .layer-2 { --w: 200px; --h: 60px; --c: #f48fb1; --z: 2; }
+        .layer-3 { --w: 150px; --h: 55px; --c: #f06292; --z: 3; }
+        .layer-4 { --w: 100px; --h: 50px; --c: #ec407a; --z: 4; }
+        .layer.show { transform: translateY(0); }
+
+        .candle-group { position: absolute; bottom: 185px; opacity: 0; transition: 0.5s; z-index: 10; }
+        .candle-body { width: 12px; height: 45px; background: linear-gradient(#fff, #fce4ec); border-radius: 3px; position: relative; }
+        .flame {
+            width: 15px; height: 25px; background: #ffae00; border-radius: 50% 50% 20% 20%;
+            position: absolute; top: -25px; left: -1.5px;
+            filter: blur(1px); box-shadow: 0 0 15px #ffae00;
+            animation: flicker 0.1s infinite alternate;
+        }
+
+        #hb-text { 
+            font-family: 'Reem Kufi'; font-size: 2.8rem; color: var(--rose); 
+            margin-top: 35px; opacity: 0; transition: 1s; text-shadow: 0 0 15px var(--rose);
+            text-align: center;
+        }
+        #countdown { font-size: 5rem; color: var(--rose); font-weight: 900; display: none; margin-top: 20px; }
+
+        .stage { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 10; position: relative; }
+        .hidden { display: none !important; }
+
+        #balloon-container { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+        .balloon { position: absolute; bottom: -150px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; cursor: pointer; animation: floatUp var(--s) linear infinite; opacity: 0.8; }
+        .balloon::after { content: ''; position: absolute; bottom: -40px; left: 50%; width: 1px; height: 50px; background: rgba(255,255,255,0.3); }
+
+        /* Auth Card */
+        .auth-card { 
+            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--rose);
+            padding: 40px; border-radius: 35px; width: 100%; max-width: 400px; text-align: center;
+        }
+        .input-group { position: relative; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; background: rgba(128,128,128,0.1); border: 1px solid var(--rose); color: var(--text); border-radius: 12px; outline: none; text-align: center; font-family: 'Cairo'; }
+        .eye { position: absolute; left: 15px; top: 18px; cursor: pointer; opacity: 0.5; font-size: 1.2rem; }
+
+        /* Dashboard Grid */
+        .main-grid { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: var(--card-bg); padding: 35px; border-radius: 30px; border: 1px solid rgba(229,177,177,0.1); transition: 0.4s; }
+        .card h3 { color: var(--rose); font-family: 'Reem Kufi'; margin-bottom: 20px; border-bottom: 1px solid rgba(229,177,177,0.2); padding-bottom: 10px; }
+        
+        .big-num { font-family: 'Reem Kufi'; font-size: 3.5rem; color: var(--rose); }
+        .amiri { font-family: 'Amiri', serif; font-size: 1.6rem; line-height: 2; text-align: justify; }
+
+        .btn-main { background: var(--rose); border: none; color: #fff; padding: 12px 40px; border-radius: 35px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--rose); }
+
+        .mic-meter { width: 160px; height: 5px; background: rgba(128,128,128,0.2); margin-top: 20px; border-radius: 10px; overflow: hidden; }
+        #mic-fill { width: 0%; height: 100%; background: var(--rose); transition: 0.1s; }
+
+        @keyframes flicker { to { transform: scale(1.1); } }
+        @keyframes floatUp { to { transform: translateY(-130vh) rotate(10deg); } }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+    <button class="mode-btn" id="mode-toggle">🌙 الوضع الداكن</button>
+    <div id="balloon-container"></div>
+    
+    <audio id="snd-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="snd-magic" src="https://assets.mixkit.co/active_storage/sfx/2432/2432-preview.mp3"></audio>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+
+    <section id="stage-0" class="stage">
+        <div class="cake">
+            <div class="candle-group" id="candle-box"><div class="candle-body"><div class="flame" id="flame"></div></div></div>
+            <div class="layer layer-4" id="l4"></div>
+            <div class="layer layer-3" id="l3"></div>
+            <div class="layer layer-2" id="l2"></div>
+            <div class="layer layer-1" id="l1"></div>
+        </div>
+        <h1 id="hb-text">Happy Birthday Day Donia</h1>
+        <div id="countdown">3</div>
+        <div id="mic-ui" style="display:none; text-align:center;">
+            <div class="mic-meter"><div id="mic-fill"></div></div>
+            <p style="opacity: 0.8; margin-top:10px;">انفخ برفق ف الميكروفون الإطفاء الشمعه</p>
+        </div>
+        <button class="btn-main" id="btn-start" style="margin-top: 40px;">دوس هنا ✨</button>
+    </section>
+
+    <section id="stage-1" class="stage hidden">
+        <div class="auth-card">
+            <h2 style="margin-bottom: 30px; font-family: 'Reem Kufi'; color: var(--rose);">مِنْ القَلْبِ لـ Donia</h2>
+            <div class="input-group"><input type="text" id="username" placeholder="اسم المستخدم"></div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="تاريخ اليوم المميز">
+                <span class="eye" id="toggle-pass">👁️</span>
+            </div>
+            <button class="btn-main" onclick="validate()" style="width: 100%;">دخول</button>
+        </div>
+    </section>
+
+    <section id="stage-2" class="stage hidden" style="justify-content: flex-start; padding-top: 80px; overflow-y: auto;">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <p style="color: var(--rose); letter-spacing: 5px; font-weight: bold;">DONIA | 2026</p>
+            <h1 id="clock" class="big-num">00 : 00 : 00</h1>
+        </div>
+
+        <div class="main-grid">
+            <div class="card" style="grid-column: 1 / -1;">
+                <h3>أدعية من القلب</h3>
+                <p class="amiri" id="dua-display">جاري استحضار الدعوات..</p>
+                <button class="btn-main" onclick="nextDua()" style="margin-top: 20px; padding: 8px 25px;">دعاء آخر ✨</button>
+            </div>
+
+            <div class="card">
+                <h3>نفحات رمضانية</h3>
+                <p id="ramadan-status" style="font-weight: bold; font-size: 1.1rem; color: var(--rose);">جاري الحساب..</p>
+                <p id="ramadan-dua" style="margin-top: 15px; font-size: 1.1rem; line-height: 1.6; font-style: italic; min-height: 80px;">"اللهم تقبل صيامنا وقيامنا"</p>
+                <button class="btn-main" onclick="nextRamadanDua()" style="margin-top: 15px; padding: 5px 15px; font-size: 0.7rem;">نفحة أخرى ✨</button>
+            </div>
+
+            <div class="card">
+                <h3>عمركِ بالتفصيل</h3>
+                <ul style="list-style: none; line-height: 3; font-weight: 700; font-size: 1.2rem;">
+                    <li id="s-days">..</li>
+                    <li id="s-hours">..</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>ركن الطمأنينة</h3>
+                <p style="line-height: 2; font-weight: 300;">
+                    الهدوء أبلغ من الكلام، والصمت يحمل أصدق المعاني. ليس كل ما في القلب يُقال، ولكن كل ما في القلب يُدعى به. 
+                </p>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <h3>ميثاق الغد</h3>
+                <p class="amiri">
+                    بكل صدق، وفي رحاب هذه الأيام المباركة، نرجو من الله أن يكتب لنا رحلةً قوامها المودة. 
+                    كل عام وأنتِ بقمة رضاكِ وسعادتكِ يا دنيا.
+                </p>
+            </div>
+        </div>
+        <footer style="padding: 60px 0; text-align: center; font-weight: bold; color: var(--rose);">صُنع بحب ♥️</footer>
+    </section>
+
+    <script>
+        // Matrix Background
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        const alphabet = "01010101DONIA2026";
+        const drops = Array(Math.floor(w/16)).fill(1);
+        function drawM() {
+            ctx.fillStyle = "rgba(10, 8, 8, 0.05)"; ctx.fillRect(0,0,w,h);
+            ctx.fillStyle = "#e5b1b1"; ctx.font = "16px monospace";
+            drops.forEach((y, i) => {
+                const txt = alphabet[Math.floor(Math.random()*alphabet.length)];
+                ctx.fillText(txt, i*16, y*16);
+                if(y*16 > h && Math.random() > 0.975) drops[i] = 0; drops[i]++;
+            });
+        }
+        setInterval(drawM, 50);
+
+        // Cake Animation
+        const snds = { pop: document.getElementById('snd-pop'), magic: document.getElementById('snd-magic'), click: document.getElementById('snd-click') };
+        
+        document.getElementById('btn-start').onclick = function() {
+            snds.click.play();
+            this.style.display = 'none';
+            const layers = ['l1', 'l2', 'l3', 'l4'];
+            layers.forEach((id, i) => {
+                setTimeout(() => {
+                    document.getElementById(id).classList.add('show');
+                    if(i === 3) {
+                        setTimeout(() => {
+                            document.getElementById('candle-box').style.opacity = '1';
+                            startMic();
+                        }, 800);
+                    }
+                }, i * 700);
+            });
+        };
+
+        async function startMic() {
+            document.getElementById('mic-ui').style.display = 'block';
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const analyzer = audioCtx.createAnalyser();
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyzer);
+                const buffer = new Uint8Array(analyzer.frequencyBinCount);
+                function check() {
+                    analyzer.getByteFrequencyData(buffer);
+                    let avg = buffer.reduce((a,b)=>a+b)/buffer.length;
+                    document.getElementById('mic-fill').style.width = Math.min(avg*4, 100)+'%';
+                    if(avg > 50) {
+                        snds.magic.play();
+                        document.getElementById('flame').style.display = 'none';
+                        document.getElementById('mic-ui').style.display = 'none'; 
+                        document.getElementById('hb-text').style.opacity = '1';
+                        stream.getTracks().forEach(t => t.stop());
+                        goCountdown(); return;
+                    }
+                    requestAnimationFrame(check);
+                }
+                check();
+            } catch(e) { setTimeout(goCountdown, 3000); }
+        }
+
+        function goCountdown() {
+            setTimeout(() => {
+                const cd = document.getElementById('countdown');
+                cd.style.display = 'block';
+                let c = 3;
+                const timer = setInterval(() => {
+                    c--; cd.innerText = c;
+                    if(c <= 0) {
+                        clearInterval(timer);
+                        document.getElementById('stage-0').classList.add('hidden');
+                        document.getElementById('stage-1').classList.remove('hidden');
+                    }
+                }, 1000);
+            }, 2500);
+        }
+
+        // Auth Logic
+        document.getElementById('toggle-pass').onclick = function() {
+            const p = document.getElementById('password');
+            p.type = p.type === 'password' ? 'text' : 'password';
+            snds.click.play();
+        };
+
+        function validate() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(u === "Donia" && p === "22/2/2006") {
+                document.getElementById('stage-1').classList.add('hidden');
+                document.getElementById('stage-2').classList.remove('hidden');
+                initMain();
+            } else { alert("عذراً، البيانات غير صحيحة"); }
+        }
+
+        // Main Logic
+        function initMain() {
+            setInterval(updateClock, 1000);
+            updateRamadan();
+            nextDua();
+            setInterval(mkBall, 1500);
+        }
+
+        function updateClock() {
+            const now = new Date(); const b = new Date('2006-02-22T00:00:00');
+            let y = now.getFullYear()-2006; let m = now.getMonth()-b.getMonth(); let d = now.getDate()-b.getDate();
+            if(d<0){ m--; d+=30; } if(m<0){ y--; m+=12; }
+            document.getElementById('clock').innerText = `${y} سنة | ${m} شهر | ${d} يوم`;
+            const diff = now - b;
+            document.getElementById('s-days').innerText = `• إجمالي الأيام: ${Math.floor(diff/86400000).toLocaleString()}`;
+            document.getElementById('s-hours').innerText = `• إجمالي الساعات: ${Math.floor(diff/3600000).toLocaleString()}`;
+        }
+
+        function updateRamadan() {
+            const rStart = new Date('2026-02-18');
+            const day = Math.floor((new Date() - rStart)/(1000*60*60*24))+1;
+            document.getElementById('ramadan-status').innerText = (day > 0 && day <= 30) ? `اليوم ${day} من رمضان 1447 هـ` : `رمضان 1447 هـ`;
+        }
+
+        // قوائم الأدعية المحدثة
+        const combinedDuas = [
+            "اللهم إني أسألك في عامي الجديد جبراً لقلبي وسكينةً لروحي.. واجعل التوفيق حليف دربي.",
+            "يا رب، اجعل القادم من عمري أجمل مما مضى، واكتب لي الخير حيث كان ثم أرضني به.",
+            "اللهم بارك لي في عمري واجعله زيادة لي في كل خير، وارزقني طمأنينة لا تنتهي.",
+            "اللهم إني أستودعك عاماً مضى من عمري، وأسألك في عامي الجديد ستراً وعافية.",
+            "يا رب ارزقني فرحة تنسيني كل ما مضى، واجعل التوفيق رفيق دربي في كل خطوة.",
+            "اللهم اكتب لي في عمري الجديد سعادة دائمة، ورزقاً حلالاً، وقلباً مطمئناً بذكرك.",
+            "اللهم إني أسألك حياةً طيبة، ونفساً راضية، وصحةً في البدن، وزيادةً في الإيمان.",
+            "يا مقلب القلوب ثبت قلبي على دينك، واجعل عامي هذا عام فتحٍ وجبرٍ وخير.",
+            "اللهم سخر لي الأقدار الجميلة، والقلوب الطيبة، واجعلني دائماً في ودائعك التي لا تضيع.",
+            "يا رب اجعل أيامي القادمة تفيض بالسكينة والرضا، وبلغني مرادي فيما يرضيك عني."
+        ];
+
+        const rDuas = [
+            "اللهم تقبل صيامنا وقيامنا واجعلنا من المقبولين ومن عتقاء شهرك الكريم.",
+            "اللهم اجعل رمضان هذا فاتحة خير وبركة، واغفر لنا ذنوبنا ويسر لنا أمورنا.",
+            "اللهم ارزقنا ليلة القدر، واكتب لنا فيها من الخير والرحمة ما يغير أقدارنا للأجمل.",
+            "يا رب استجب دعواتنا في هذه الأيام المباركة، واشفِ مرضانا، وارحم موتانا.",
+            "اللهم اجعلنا ممن صام الشهر واستكمل الأجر ووفق لليلة القدر وفاز بجائزة الرب.",
+            "اللهم ارحمنا برحمتك التي وسعت كل شيء، وأعنا على ذكرك وشكرك وحسن عبادتك.",
+            "يا رب بلّغنا تمام الأشياء، وتحقق الأمنيات، واجعلنا في رمضان من السعداء.",
+            "اللهم بارك لنا في رمضان، وأعنا فيه على حفظ اللسان وصالح الأعمال.",
+            "اللهم تقبل منا صالح الأعمال، واجعلنا من أهل الجنة ووالدينا ومن نحب.",
+            "يا رب اجعل رمضان شهراً لجبر الخواطر، وتفريج الهموم، واستجابة الدعوات التي في قلوبنا."
+        ];
+
+        function nextDua() { 
+            const text = combinedDuas[Math.floor(Math.random()*combinedDuas.length)];
+            document.getElementById('dua-display').innerText = text; 
+        }
+        
+        function nextRamadanDua() { 
+            const text = rDuas[Math.floor(Math.random()*rDuas.length)];
+            document.getElementById('ramadan-dua').innerText = text; 
+        }
+
+        const modeBtn = document.getElementById('mode-toggle');
+        modeBtn.onclick = () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            modeBtn.innerHTML = isLight ? '☀️ الوضع المضيء' : '🌙 الوضع الداكن';
+        };
+
+        function mkBall() {
+            const b = document.createElement('div');
+            b.className = 'balloon';
+            const colors = ['#e5b1b1', '#d4af37', '#ffffff', '#f8bbd0'];
+            const size = Math.random()*20+45;
+            b.style.width = size+'px'; b.style.height = size*1.3+'px';
+            b.style.left = Math.random()*100+'vw';
+            b.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+            b.style.setProperty('--s', (Math.random()*7+10)+'s');
+            b.onclick = () => { snds.pop.play(); b.remove(); };
+            document.getElementById('balloon-container').appendChild(b);
+            setTimeout(()=>b.remove(), 15000);
+        }
+    </script>
+</body>
+</html>
