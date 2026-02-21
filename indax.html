@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أثر | Donia 2026</title>
+    <title>أثر | 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Amiri:ital,wght@0,400;1,700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -31,10 +31,9 @@
             overflow-x: hidden;
         }
 
-        /* Matrix Background */
         #matrix-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; opacity: 0.15; pointer-events: none;
+            z-index: 0; opacity: 0.12; pointer-events: none;
         }
 
         .mode-btn {
@@ -44,7 +43,6 @@
             cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;
         }
 
-        /* Cake Design */
         .cake { position: relative; width: 250px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .layer {
             position: relative; width: var(--w); height: var(--h);
@@ -53,6 +51,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 -5px 10px rgba(0,0,0,0.1);
             transform: translateY(-100vh);
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            will-change: transform;
         }
         .layer-1 { --w: 250px; --h: 65px; --c: #f8bbd0; --z: 1; }
         .layer-2 { --w: 200px; --h: 60px; --c: #f48fb1; --z: 2; }
@@ -80,10 +79,9 @@
         .hidden { display: none !important; }
 
         #balloon-container { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
-        .balloon { position: absolute; bottom: -150px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; cursor: pointer; animation: floatUp var(--s) linear infinite; opacity: 0.8; }
+        .balloon { position: absolute; bottom: -150px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; cursor: pointer; animation: floatUp var(--s) linear infinite; opacity: 0.8; will-change: transform; }
         .balloon::after { content: ''; position: absolute; bottom: -40px; left: 50%; width: 1px; height: 50px; background: rgba(255,255,255,0.3); }
 
-        /* Auth Card */
         .auth-card { 
             background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--rose);
             padding: 40px; border-radius: 35px; width: 100%; max-width: 400px; text-align: center;
@@ -92,7 +90,6 @@
         input { width: 100%; padding: 15px; background: rgba(128,128,128,0.1); border: 1px solid var(--rose); color: var(--text); border-radius: 12px; outline: none; text-align: center; font-family: 'Cairo'; }
         .eye { position: absolute; left: 15px; top: 18px; cursor: pointer; opacity: 0.5; font-size: 1.2rem; }
 
-        /* Dashboard Grid */
         .main-grid { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .card { background: var(--card-bg); padding: 35px; border-radius: 30px; border: 1px solid rgba(229,177,177,0.1); transition: 0.4s; }
         .card h3 { color: var(--rose); font-family: 'Reem Kufi'; margin-bottom: 20px; border-bottom: 1px solid rgba(229,177,177,0.2); padding-bottom: 10px; }
@@ -128,18 +125,18 @@
             <div class="layer layer-2" id="l2"></div>
             <div class="layer layer-1" id="l1"></div>
         </div>
-        <h1 id="hb-text">Happy Birthday Day Donia</h1>
+        <h1 id="hb-text">Happy Birthday 2026</h1>
         <div id="countdown">3</div>
         <div id="mic-ui" style="display:none; text-align:center;">
             <div class="mic-meter"><div id="mic-fill"></div></div>
-            <p style="opacity: 0.8; margin-top:10px;">انفخ برفق ف الميكروفون الإطفاء الشمعه</p>
+            <p style="opacity: 0.8; margin-top:10px;">انفخ بقوة في الميكروفون لإطفاء الشمعة 🌬️</p>
         </div>
-        <button class="btn-main" id="btn-start" style="margin-top: 40px;">دوس هنا ✨</button>
+        <button class="btn-main" id="btn-start" style="margin-top: 40px;">أهلاً بكِ ✨</button>
     </section>
 
     <section id="stage-1" class="stage hidden">
         <div class="auth-card">
-            <h2 style="margin-bottom: 30px; font-family: 'Reem Kufi'; color: var(--rose);">مِنْ القَلْبِ لـ Donia</h2>
+            <h2 style="margin-bottom: 30px; font-family: 'Reem Kufi'; color: var(--rose);">مِنْ القَلْبِ..</h2>
             <div class="input-group"><input type="text" id="username" placeholder="اسم المستخدم"></div>
             <div class="input-group">
                 <input type="password" id="password" placeholder="تاريخ اليوم المميز">
@@ -201,7 +198,7 @@
         const ctx = canvas.getContext('2d');
         let w = canvas.width = window.innerWidth;
         let h = canvas.height = window.innerHeight;
-        const alphabet = "01010101DONIA2026";
+        const alphabet = "010101012026";
         const drops = Array(Math.floor(w/16)).fill(1);
         function drawM() {
             ctx.fillStyle = "rgba(10, 8, 8, 0.05)"; ctx.fillRect(0,0,w,h);
@@ -230,7 +227,7 @@
                             startMic();
                         }, 800);
                     }
-                }, i * 700);
+                }, i * 600);
             });
         };
 
@@ -243,11 +240,13 @@
                 const source = audioCtx.createMediaStreamSource(stream);
                 source.connect(analyzer);
                 const buffer = new Uint8Array(analyzer.frequencyBinCount);
+                
                 function check() {
                     analyzer.getByteFrequencyData(buffer);
                     let avg = buffer.reduce((a,b)=>a+b)/buffer.length;
                     document.getElementById('mic-fill').style.width = Math.min(avg*4, 100)+'%';
-                    if(avg > 50) {
+                    // تم رفع العتبة إلى 70 لضمان عدم الانطفاء التلقائي
+                    if(avg > 70) { 
                         snds.magic.play();
                         document.getElementById('flame').style.display = 'none';
                         document.getElementById('mic-ui').style.display = 'none'; 
@@ -258,10 +257,11 @@
                     requestAnimationFrame(check);
                 }
                 check();
-            } catch(e) { setTimeout(goCountdown, 3000); }
+            } catch(e) { setTimeout(goCountdown, 4000); }
         }
 
         function goCountdown() {
+            // زيادة وقت الانتظار لـ 4 ثواني ليكون أبطأ وأكثر راحة
             setTimeout(() => {
                 const cd = document.getElementById('countdown');
                 cd.style.display = 'block';
@@ -273,8 +273,8 @@
                         document.getElementById('stage-0').classList.add('hidden');
                         document.getElementById('stage-1').classList.remove('hidden');
                     }
-                }, 1000);
-            }, 2500);
+                }, 1200); // إبطاء عداد الثواني قليلاً
+            }, 4000); 
         }
 
         // Auth Logic
@@ -294,12 +294,12 @@
             } else { alert("عذراً، البيانات غير صحيحة"); }
         }
 
-        // Main Logic
         function initMain() {
+            updateClock();
             setInterval(updateClock, 1000);
             updateRamadan();
             nextDua();
-            setInterval(mkBall, 1500);
+            setInterval(mkBall, 2000);
         }
 
         function updateClock() {
@@ -313,12 +313,13 @@
         }
 
         function updateRamadan() {
-            const rStart = new Date('2026-02-18');
-            const day = Math.floor((new Date() - rStart)/(1000*60*60*24))+1;
+            const rStart = new Date('2026-02-19'); 
+            const now = new Date();
+            const diff = now - rStart;
+            const day = Math.floor(diff/(1000*60*60*24)) + 1;
             document.getElementById('ramadan-status').innerText = (day > 0 && day <= 30) ? `اليوم ${day} من رمضان 1447 هـ` : `رمضان 1447 هـ`;
         }
 
-        // قوائم الأدعية المحدثة
         const combinedDuas = [
             "اللهم إني أسألك في عامي الجديد جبراً لقلبي وسكينةً لروحي.. واجعل التوفيق حليف دربي.",
             "يا رب، اجعل القادم من عمري أجمل مما مضى، واكتب لي الخير حيث كان ثم أرضني به.",
@@ -363,18 +364,19 @@
         };
 
         function mkBall() {
+            if(document.hidden) return;
             const b = document.createElement('div');
             b.className = 'balloon';
             const colors = ['#e5b1b1', '#d4af37', '#ffffff', '#f8bbd0'];
             const size = Math.random()*20+45;
             b.style.width = size+'px'; b.style.height = size*1.3+'px';
-            b.style.left = Math.random()*100+'vw';
+            b.style.left = Math.random()*90+'vw';
             b.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
             b.style.setProperty('--s', (Math.random()*7+10)+'s');
             b.onclick = () => { snds.pop.play(); b.remove(); };
             document.getElementById('balloon-container').appendChild(b);
-            setTimeout(()=>b.remove(), 15000);
+            setTimeout(()=>b.remove(), 12000);
         }
     </script>
 </body>
-</html>
+            </html>
